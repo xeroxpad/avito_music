@@ -46,7 +46,7 @@ fun CardTrack(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(vertical = 5.dp)
+                .padding(vertical = 3.dp, horizontal = 3.dp)
         ) {
             Box(
                 modifier = Modifier

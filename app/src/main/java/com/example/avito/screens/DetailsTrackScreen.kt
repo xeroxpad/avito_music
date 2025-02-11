@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,22 +39,38 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.avito.R
 import com.example.avito.entity.TrackCard
+import com.example.avito.player.PlayerViewModel
+import com.example.avito.viewmodel.DownloadedTracksViewModel
 
 @Composable
 fun DetailsTrackScreen(
     modifier: Modifier = Modifier,
     trackCard: TrackCard,
-    navController: NavController
+    navController: NavController,
+    downloadedTracksViewModel: DownloadedTracksViewModel = viewModel(),
+    playerViewModel: PlayerViewModel = viewModel(),
 ) {
-    var isPlaying by remember { mutableStateOf(false) }
+    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
+    val track = tracks.find { it.id == trackCard.id }
+
+    if (track == null) {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+        return
+    }
+//    var isPlaying by remember { mutableStateOf(false) }
+    val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
     var progress by remember { mutableFloatStateOf(0.3f) }
-    var isRepeat by remember { mutableStateOf(true) }
-    var isShuffle by remember { mutableStateOf(true) }
+    var isRepeat by remember { mutableStateOf(false) }
+    var isShuffle by remember { mutableStateOf(false) }
     Scaffold(
         modifier =
         modifier
@@ -64,13 +83,20 @@ fun DetailsTrackScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_down),
-                    contentDescription = "arrow down",
+                Box(
                     modifier = Modifier
-                        .size(24.dp)
-                        .clickable { navController.popBackStack() }
-                )
+                        .size(28.dp)
+                        .clip(shape = RoundedCornerShape(12.dp))
+                        .clickable { navController.popBackStack() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_down),
+                        contentDescription = "arrow down",
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                }
             }
         },
         content = { padding ->
@@ -94,6 +120,7 @@ fun DetailsTrackScreen(
                         placeholder = painterResource(id = R.drawable.ic_track_default),
                         error = painterResource(id = R.drawable.ic_track_default),
                         contentScale = ContentScale.FillBounds,
+                        modifier = Modifier.padding(5.dp)
                     )
                 }
                 Column(
@@ -137,7 +164,13 @@ fun DetailsTrackScreen(
                             )
                         }
                         IconButton(
-                            onClick = { isPlaying = !isPlaying },
+                            onClick = {
+                                if (isPlaying) {
+                                    playerViewModel.pauseTrack()
+                                } else {
+                                    playerViewModel.resumeTrack()
+                                }
+                            },
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(CircleShape)
@@ -168,43 +201,60 @@ fun DetailsTrackScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(
-                            verticalArrangement = Arrangement.SpaceBetween,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.height(44.dp)
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(shape = RoundedCornerShape(12.dp))
+                                    .clickable { isRepeat = !isRepeat },
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Icon(
                                     painter = painterResource(
-                                        id = if (isRepeat) R.drawable.ic_repeat else R.drawable.ic_repeat_one
+                                        id = if (isRepeat) R.drawable.ic_repeat_one else R.drawable.ic_repeat
                                     ),
                                     contentDescription = null,
-                                    modifier = Modifier.size(32.dp)
+                                    modifier = Modifier
+                                        .size(30.dp)
                                 )
                             }
-                            if (isPlaying) {
+                            if (isRepeat) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_dot),
                                     contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    tint = Color.Unspecified,
+                                    modifier = Modifier.size(10.dp)
                                 )
                             }
                         }
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.height(44.dp)
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(shape = RoundedCornerShape(12.dp))
+                                    .clickable { isShuffle = !isShuffle },
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Icon(
                                     painter = painterResource(
                                         id = R.drawable.ic_shuffle_random
                                     ),
                                     contentDescription = null,
-                                    modifier = Modifier.size(32.dp)
+                                    modifier = Modifier
+                                        .size(30.dp)
                                 )
                             }
                             if (isShuffle) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_dot),
                                     contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    tint = Color.Unspecified,
+                                    modifier = Modifier.size(10.dp)
                                 )
                             }
                         }
@@ -215,8 +265,8 @@ fun DetailsTrackScreen(
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DetailsScreenPrev(navController: NavController = rememberNavController()) {
-    DetailsTrackScreen(navController = navController, trackCard = TrackCard())
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DetailsScreenPrev(navController: NavController = rememberNavController()) {
+//    DetailsTrackScreen(navController = navController, trackCard = TrackCard())
+//}

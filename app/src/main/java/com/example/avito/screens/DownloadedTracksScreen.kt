@@ -39,6 +39,7 @@ import com.example.avito.R
 import com.example.avito.components.CardTrack
 import com.example.avito.entity.TrackCard
 import com.example.avito.navigation.Graph
+import com.example.avito.player.PlayerViewModel
 import com.example.avito.viewmodel.DownloadedTracksViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
@@ -47,6 +48,7 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 fun DownloadedTracksScreen(
     modifier: Modifier = Modifier,
     downloadedTracksViewModel: DownloadedTracksViewModel = viewModel(),
+    playerViewModel: PlayerViewModel = viewModel(),
     navController: NavController,
 ) {
     val isRefreshing by downloadedTracksViewModel.isRefreshing.collectAsStateWithLifecycle()
@@ -122,7 +124,10 @@ fun DownloadedTracksScreen(
                         items(tracks) { track ->
                             CardTrack(
                                 trackCard = track,
-                                onClick = { navController.navigate(Graph.DetailsTracks.route) }
+                                onClick = {
+                                    playerViewModel.playTrack(context, track.uri)
+                                    navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
+                                }
                             )
                         }
                     }
