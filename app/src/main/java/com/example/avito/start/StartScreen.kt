@@ -1,5 +1,8 @@
 package com.example.avito.start
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -8,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.packFloats
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.avito.navigation.BottomNavigationBar
@@ -20,12 +24,13 @@ fun StartScreen(
     Scaffold(bottomBar = {
         BottomNavigationBar(
             navController = navController,
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(horizontal = 20.dp)
         )
     }) { padding ->
         NavHostItem(
             navController = navController,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .padding(padding)
         )
     }
 }

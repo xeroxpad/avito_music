@@ -22,7 +22,7 @@ fun BottomNavigationBar(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
-    NavigationBar(modifier = modifier, containerColor = Color.Transparent) {
+    NavigationBar(modifier = modifier, containerColor = Color.Unspecified) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
         NavBarItems.BarItems.forEach { navItem ->
@@ -50,6 +50,7 @@ fun BottomNavigationBar(
                         text = navItem.title,
                         fontSize = 9.sp,
                         maxLines = 1,
+                        lineHeight = 7.sp,
                         overflow = TextOverflow.Ellipsis
                     )
                 },

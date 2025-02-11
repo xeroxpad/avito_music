@@ -6,11 +6,6 @@ object NavBarItems {
     val BarItems = listOf(
         ItemBar(
             title = "Музыка",
-            icon = R.drawable.ic_music_all,
-            route = Graph.PlaybackTracks.route
-        ),
-        ItemBar(
-            title = "Deez",
             icon = R.drawable.ic_deezer,
             route = Graph.TracksFromDeezer.route
         ),
