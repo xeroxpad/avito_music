@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -25,24 +23,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.avito.R
 import com.example.avito.entity.TrackCard
@@ -54,23 +47,23 @@ fun DetailsTrackScreen(
     modifier: Modifier = Modifier,
     trackCard: TrackCard,
     navController: NavController,
-    downloadedTracksViewModel: DownloadedTracksViewModel = viewModel(),
-    playerViewModel: PlayerViewModel = viewModel(),
+    downloadedTracksViewModel: DownloadedTracksViewModel,
+    playerViewModel: PlayerViewModel,
 ) {
     val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
-    val track = tracks.find { it.id == trackCard.id }
-
-    if (track == null) {
-        LaunchedEffect(Unit) {
-            navController.popBackStack()
-        }
-        return
-    }
-//    var isPlaying by remember { mutableStateOf(false) }
+    val currentTrackIndex by playerViewModel.currentTrackIndex.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val track = tracks.getOrNull(currentTrackIndex)
     val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
-    var progress by remember { mutableFloatStateOf(0.3f) }
-    var isRepeat by remember { mutableStateOf(false) }
-    var isShuffle by remember { mutableStateOf(false) }
+    val currentPosition by playerViewModel.currentPosition.collectAsStateWithLifecycle()
+    val duration by playerViewModel.duration.collectAsStateWithLifecycle()
+    val isRepeat by playerViewModel.isRepeat.collectAsStateWithLifecycle()
+    val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
+    val progress = if (duration > 0) currentPosition.toFloat() / duration else 0f
+    LaunchedEffect(tracks) {
+        playerViewModel.setTrackList(tracks)
+    }
+
     Scaffold(
         modifier =
         modifier
@@ -94,7 +87,7 @@ fun DetailsTrackScreen(
                         painter = painterResource(id = R.drawable.ic_arrow_down),
                         contentDescription = "arrow down",
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(18.dp)
                     )
                 }
             }
@@ -111,11 +104,12 @@ fun DetailsTrackScreen(
                     modifier = Modifier
                         .size(300.dp)
                         .clip(shape = RoundedCornerShape(18.dp))
-                        .background(Color.Gray.copy(0.1f)),
+                        .background(Color.Gray.copy(0.1f))
+                        .align(Alignment.CenterHorizontally),
                     contentAlignment = Alignment.Center,
                 ) {
                     AsyncImage(
-                        model = trackCard.coverTrack,
+                        model = track?.coverTrack,
                         contentDescription = null,
                         placeholder = painterResource(id = R.drawable.ic_track_default),
                         error = painterResource(id = R.drawable.ic_track_default),
@@ -130,24 +124,44 @@ fun DetailsTrackScreen(
                 ) {
                     Column {
                         Spacer(modifier = Modifier.height(15.dp))
-                        Text(text = trackCard.titleTrack, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = track!!.titleTrack,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(
-                            text = trackCard.artistTrack, fontWeight = FontWeight.Light,
+                            text = track.artistTrack, fontWeight = FontWeight.Light,
                             color = Color.Gray,
                             lineHeight = 10.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                        Slider(
-                            value = progress,
-                            onValueChange = { progress = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp),
-                            colors = SliderDefaults.colors(
-                                thumbColor = Color.Black,
-                                activeTrackColor = Color.Black
+                        Column {
+                            Slider(
+                                value = progress,
+                                onValueChange = { newProgress ->
+                                    val newPosition = (newProgress * duration).toInt()
+                                    playerViewModel.seekTo(newPosition)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = Color.Black,
+                                    activeTrackColor = Color.Black
+                                )
                             )
-                        )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = playerViewModel.formatTime(currentPosition))
+                                Text(text = playerViewModel.formatTime(duration))
+                            }
+                        }
+
                     }
                     Row(
                         modifier = Modifier
@@ -156,10 +170,13 @@ fun DetailsTrackScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { }) {
+                        IconButton(
+                            onClick = { playerViewModel.playPreviousTrack(context) },
+                            enabled = currentTrackIndex > 0
+                        ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_player_back),
-                                contentDescription = "Previous",
+                                contentDescription = null,
                                 modifier = Modifier.size(36.dp)
                             )
                         }
@@ -185,7 +202,16 @@ fun DetailsTrackScreen(
                                 modifier = Modifier.size(36.dp)
                             )
                         }
-                        IconButton(onClick = { }) {
+                        IconButton(
+                            onClick = {
+                                if (isShuffle) {
+                                    playerViewModel.playRandomTrack(context)
+                                } else {
+                                    playerViewModel.playNextTrack(context)
+                                }
+                            },
+                            enabled = if (isShuffle) true else currentTrackIndex < tracks.size - 1
+                        ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_player_next),
                                 contentDescription = "Next",
@@ -208,7 +234,7 @@ fun DetailsTrackScreen(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(shape = RoundedCornerShape(12.dp))
-                                    .clickable { isRepeat = !isRepeat },
+                                    .clickable { playerViewModel.toggleRepeat() },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -224,7 +250,6 @@ fun DetailsTrackScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_dot),
                                     contentDescription = null,
-                                    tint = Color.Unspecified,
                                     modifier = Modifier.size(10.dp)
                                 )
                             }
@@ -237,7 +262,7 @@ fun DetailsTrackScreen(
                                 modifier = Modifier
                                     .size(32.dp)
                                     .clip(shape = RoundedCornerShape(12.dp))
-                                    .clickable { isShuffle = !isShuffle },
+                                    .clickable { playerViewModel.toggleShuffle() },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -253,7 +278,6 @@ fun DetailsTrackScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_dot),
                                     contentDescription = null,
-                                    tint = Color.Unspecified,
                                     modifier = Modifier.size(10.dp)
                                 )
                             }
@@ -264,9 +288,3 @@ fun DetailsTrackScreen(
         }
     )
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DetailsScreenPrev(navController: NavController = rememberNavController()) {
-//    DetailsTrackScreen(navController = navController, trackCard = TrackCard())
-//}

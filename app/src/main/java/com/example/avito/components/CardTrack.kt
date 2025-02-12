@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -75,12 +76,19 @@ fun CardTrack(
                     .weight(0.8f)
             ) {
                 Column {
-                    Text(text = trackCard.titleTrack, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = trackCard.titleTrack,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                     Text(
                         text = trackCard.artistTrack,
                         fontWeight = FontWeight.Light,
                         color = Color.Gray,
                         lineHeight = 10.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }

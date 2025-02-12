@@ -47,8 +47,8 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 @Composable
 fun DownloadedTracksScreen(
     modifier: Modifier = Modifier,
-    downloadedTracksViewModel: DownloadedTracksViewModel = viewModel(),
-    playerViewModel: PlayerViewModel = viewModel(),
+    downloadedTracksViewModel: DownloadedTracksViewModel,
+    playerViewModel: PlayerViewModel,
     navController: NavController,
 ) {
     val isRefreshing by downloadedTracksViewModel.isRefreshing.collectAsStateWithLifecycle()
@@ -67,6 +67,9 @@ fun DownloadedTracksScreen(
 
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+    LaunchedEffect(tracks) {
+        playerViewModel.setTrackList(tracks)
     }
     Scaffold(
         modifier =
@@ -125,7 +128,16 @@ fun DownloadedTracksScreen(
                             CardTrack(
                                 trackCard = track,
                                 onClick = {
-                                    playerViewModel.playTrack(context, track.uri)
+//                                    if (playerViewModel.currentTrackUri != track.uri) {
+//                                        playerViewModel.playTrack(context, track.uri)
+//                                    }
+//                                    navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
+
+                                    val trackIndex = tracks.indexOf(track)
+
+                                    if (playerViewModel.currentTrackIndex.value != trackIndex) {
+                                        playerViewModel.playTrack(context, trackIndex)
+                                    }
                                     navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
                                 }
                             )

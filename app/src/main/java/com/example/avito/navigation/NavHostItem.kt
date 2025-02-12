@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.avito.entity.TrackCard
+import com.example.avito.player.PlayerViewModel
 import com.example.avito.screens.DeezerTracksScreen
 import com.example.avito.screens.DetailsTrackScreen
 import com.example.avito.screens.DownloadedTracksScreen
@@ -21,6 +22,8 @@ fun NavHostItem(
     modifier: Modifier = Modifier,
     navController: NavHostController,
 ) {
+    val downloadedTracksViewModel: DownloadedTracksViewModel = viewModel()
+    val playerViewModel: PlayerViewModel = viewModel()
     Box(modifier = modifier) {
         NavHost(
             navController = navController,
@@ -30,7 +33,11 @@ fun NavHostItem(
                 DeezerTracksScreen(navController = navController)
             }
             composable(Graph.DownloadedTracks.route) {
-                DownloadedTracksScreen(navController = navController)
+                DownloadedTracksScreen(
+                    navController = navController,
+                    playerViewModel = playerViewModel,
+                    downloadedTracksViewModel = downloadedTracksViewModel
+                )
             }
             composable("${Graph.DetailsTracks.route}/{trackId}") { backStackEntry ->
                 val trackId = backStackEntry.arguments?.getString("trackId")?.toLongOrNull()
@@ -38,11 +45,15 @@ fun NavHostItem(
                     navController.popBackStack()
                     return@composable
                 }
-                val viewModel: DownloadedTracksViewModel = viewModel()
-                val tracks by viewModel.track.collectAsStateWithLifecycle()
+                val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
                 val track = tracks.find { it.id == trackId }
                 track?.let {
-                    DetailsTrackScreen(trackCard = it, navController = navController, )
+                    DetailsTrackScreen(
+                        trackCard = it,
+                        navController = navController,
+                        playerViewModel = playerViewModel,
+                        downloadedTracksViewModel = downloadedTracksViewModel
+                    )
                 }
             }
         }
