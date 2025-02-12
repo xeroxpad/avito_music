@@ -63,9 +63,11 @@ class PlayerViewModel : ViewModel() {
                 _isRepeat.value -> {
                     playTrack(context, _currentTrackIndex.value)
                 }
+
                 _isShuffle.value -> {
                     playRandomTrack(context)
                 }
+
                 else -> {
                     playNextTrack(context)
                 }
@@ -136,6 +138,19 @@ class PlayerViewModel : ViewModel() {
         _isShuffle.value = !_isShuffle.value
         if (_isShuffle.value) {
             _isRepeat.value = false
+        }
+    }
+
+    fun searchTracks(query: String): List<TrackCard> {
+        return if (query.isBlank()) {
+            trackList
+        } else {
+            trackList.filter {
+                it.titleTrack.contains(
+                    query,
+                    ignoreCase = true
+                ) || it.artistTrack.contains(query, ignoreCase = true)
+            }
         }
     }
 

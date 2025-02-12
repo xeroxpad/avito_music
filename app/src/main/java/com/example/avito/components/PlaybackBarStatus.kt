@@ -51,17 +51,17 @@ fun PlaybackBarStatus(
     val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
     val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
     val currentTrackIndex by playerViewModel.currentTrackIndex.collectAsStateWithLifecycle()
-    val track = tracks.getOrNull(currentTrackIndex)
+    val track = tracks.getOrNull(currentTrackIndex) ?: return
     val context = LocalContext.current
     val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
-            .padding(horizontal = 10.dp)
+            .padding(horizontal = 20.dp)
             .clip(shape = RoundedCornerShape(10.dp))
             .background(Color.Gray.copy(2f))
-            .clickable { navController.navigate("${Graph.DetailsTracks.route}/${track?.id}")},
+            .clickable { navController.navigate("${Graph.DetailsTracks.route}/${track.id}")},
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -73,7 +73,7 @@ fun PlaybackBarStatus(
             contentAlignment = Alignment.Center,
         ) {
             AsyncImage(
-                model = track?.coverTrack,
+                model = track.coverTrack,
                 contentDescription = null,
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(14.dp))
@@ -88,11 +88,11 @@ fun PlaybackBarStatus(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(0.6f)
+                .weight(0.5f)
         ) {
             Column {
                 Text(
-                    text = track!!.titleTrack,
+                    text = track.titleTrack,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -110,7 +110,7 @@ fun PlaybackBarStatus(
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.2f)
+            modifier = Modifier.weight(0.3f)
         ) {
             Box(
                 modifier = Modifier

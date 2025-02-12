@@ -2,6 +2,7 @@ package com.example.avito.start
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -13,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.avito.components.PlaybackBarStatus
-import com.example.avito.entity.TrackCard
 import com.example.avito.navigation.BottomNavigationBar
 import com.example.avito.navigation.Graph
 import com.example.avito.navigation.NavHostItem
@@ -40,23 +40,25 @@ fun StartScreen(
             bottomBarIsShow.value -> {
                 Column {
                     PlaybackBarStatus(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(top = 5.dp),
                         playerViewModel = playerViewModel,
                         downloadedTracksViewModel = downloadedTracksViewModel,
                         navController = navController,
                     )
                     BottomNavigationBar(
                         navController = navController,
-                        modifier = Modifier.padding(horizontal = 20.dp)
+                        modifier = Modifier
+                            .padding(top = 3.dp)
+                            .padding(horizontal = 20.dp)
+                            .height(60.dp)
                     )
                 }
             }
         }
-    }) { padding ->
+    }) { innerPadding ->
         NavHostItem(
             navController = navController,
-            modifier = Modifier
-                .padding(padding)
+            innerPadding = innerPadding,
         )
     }
 }

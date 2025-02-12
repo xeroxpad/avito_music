@@ -1,5 +1,7 @@
 package com.example.avito.screens
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,31 +21,27 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 fun DeezerTracksScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    innerPadding: PaddingValues,
 ) {
     var isRefreshing by remember { mutableStateOf(false) }
-    Scaffold(
-        modifier =
-        modifier
+    Column(
+        modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp),
-        topBar = {
-
-        },
-        content = { padding ->
-            SwipeRefresh(
-                state = SwipeRefreshState(isRefreshing),
-                onRefresh = { isRefreshing = true }
+            .padding(innerPadding)
+            .padding(horizontal = 20.dp)
+    ) {
+        SwipeRefresh(
+            state = SwipeRefreshState(isRefreshing),
+            onRefresh = { isRefreshing = true }
+        ) {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
             ) {
-                LazyColumn(
-                    modifier = modifier
-                        .padding(padding)
-                        .fillMaxSize()
-                ) {
-                    item() {
+                item() {
 
-                    }
                 }
             }
         }
-    )
+    }
 }

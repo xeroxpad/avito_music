@@ -1,6 +1,7 @@
 package com.example.avito.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import com.example.avito.viewmodel.DownloadedTracksViewModel
 fun NavHostItem(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    innerPadding: PaddingValues,
 ) {
     val downloadedTracksViewModel: DownloadedTracksViewModel = viewModel()
     val playerViewModel: PlayerViewModel = viewModel()
@@ -28,13 +30,14 @@ fun NavHostItem(
             startDestination = Graph.TracksFromDeezer.route,
         ) {
             composable(Graph.TracksFromDeezer.route) {
-                DeezerTracksScreen(navController = navController)
+                DeezerTracksScreen(navController = navController, innerPadding = innerPadding)
             }
             composable(Graph.DownloadedTracks.route) {
                 DownloadedTracksScreen(
                     navController = navController,
                     playerViewModel = playerViewModel,
-                    downloadedTracksViewModel = downloadedTracksViewModel
+                    downloadedTracksViewModel = downloadedTracksViewModel,
+                    innerPadding = innerPadding
                 )
             }
             composable("${Graph.DetailsTracks.route}/{trackId}") { backStackEntry ->

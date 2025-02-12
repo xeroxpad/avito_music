@@ -42,7 +42,8 @@ fun BottomNavigationBar(
                     Icon(
                         painter = painterResource(id = navItem.icon),
                         contentDescription = navItem.title,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier
+                            .size(20.dp)
                     )
                 },
                 label = {
@@ -50,7 +51,7 @@ fun BottomNavigationBar(
                         text = navItem.title,
                         fontSize = 9.sp,
                         maxLines = 1,
-                        lineHeight = 7.sp,
+                        lineHeight = 5.sp,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
