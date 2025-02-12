@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -33,11 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.avito.R
 import com.example.avito.components.CardTrack
-import com.example.avito.entity.TrackCard
 import com.example.avito.navigation.Graph
 import com.example.avito.player.PlayerViewModel
 import com.example.avito.viewmodel.DownloadedTracksViewModel
@@ -128,17 +125,11 @@ fun DownloadedTracksScreen(
                             CardTrack(
                                 trackCard = track,
                                 onClick = {
-//                                    if (playerViewModel.currentTrackUri != track.uri) {
-//                                        playerViewModel.playTrack(context, track.uri)
-//                                    }
-//                                    navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
-
                                     val trackIndex = tracks.indexOf(track)
-
                                     if (playerViewModel.currentTrackIndex.value != trackIndex) {
                                         playerViewModel.playTrack(context, trackIndex)
                                     }
-                                    navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
+//                                    navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
                                 }
                             )
                         }

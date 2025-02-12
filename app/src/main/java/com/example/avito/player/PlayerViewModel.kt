@@ -2,7 +2,6 @@ package com.example.avito.player
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.avito.entity.TrackCard

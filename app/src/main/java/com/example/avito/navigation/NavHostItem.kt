@@ -6,15 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.avito.entity.TrackCard
 import com.example.avito.player.PlayerViewModel
 import com.example.avito.screens.DeezerTracksScreen
 import com.example.avito.screens.DetailsTrackScreen
 import com.example.avito.screens.DownloadedTracksScreen
-import com.example.avito.screens.PlaybackTracksScreen
 import com.example.avito.viewmodel.DownloadedTracksViewModel
 
 @Composable

@@ -64,7 +64,15 @@ class DownloadedTracksViewModel(application: Application) : AndroidViewModel(app
                     val artist = it.getString(artistColumn) ?: "Unknown"
                     val data = it.getString(dataColumn)
                     val url = Uri.parse(data)
-                    trackList.add(TrackCard(id, title, artist, uri = url))
+                    trackList.add(
+                        TrackCard(
+                            id = id,
+                            coverTrack = "",
+                            titleTrack = title,
+                            artistTrack = artist,
+                            uri = url
+                        )
+                    )
                 }
             }
         }
