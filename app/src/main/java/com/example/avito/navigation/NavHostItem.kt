@@ -53,7 +53,8 @@ fun NavHostItem(
                         trackCard = it,
                         navController = navController,
                         playerViewModel = playerViewModel,
-                        downloadedTracksViewModel = downloadedTracksViewModel
+                        downloadedTracksViewModel = downloadedTracksViewModel,
+                        innerPadding = innerPadding
                     )
                 }
             }

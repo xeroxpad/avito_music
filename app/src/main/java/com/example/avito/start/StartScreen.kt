@@ -3,7 +3,9 @@ package com.example.avito.start
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +35,7 @@ fun StartScreen(
     bottomBarIsShow.value = when (baseRoute) {
         Graph.DetailsTracks.route,
         -> false
+
         else -> true
     }
     Scaffold(bottomBar = {
@@ -40,7 +43,9 @@ fun StartScreen(
             bottomBarIsShow.value -> {
                 Column {
                     PlaybackBarStatus(
-                        modifier = Modifier.fillMaxWidth().padding(top = 5.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 5.dp),
                         playerViewModel = playerViewModel,
                         downloadedTracksViewModel = downloadedTracksViewModel,
                         navController = navController,
@@ -48,6 +53,7 @@ fun StartScreen(
                     BottomNavigationBar(
                         navController = navController,
                         modifier = Modifier
+                            .navigationBarsPadding()
                             .padding(top = 3.dp)
                             .padding(horizontal = 20.dp)
                             .height(60.dp)

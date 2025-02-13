@@ -1,10 +1,13 @@
 package com.example.avito.player
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.avito.entity.TrackCard
+import com.example.avito.service.MusicPlayerService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,6 +60,7 @@ class PlayerViewModel : ViewModel() {
 
         _isPlaying.value = true
         startProgressUpdater()
+        startMusicService(context)
 
         mediaPlayer?.setOnCompletionListener {
             when {
@@ -113,7 +117,7 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    fun playPreviousTrack(context: Context) {
+    fun playBackTrack(context: Context) {
         val prevIndex = _currentTrackIndex.value - 1
         if (prevIndex >= 0) {
             playTrack(context, prevIndex)
@@ -154,8 +158,16 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
+    fun startMusicService(context: Context) {
+        val intent = Intent(context, MusicPlayerService::class.java).apply {
+            action = "START_SERVICE"
+        }
+        ContextCompat.startForegroundService(context, intent)
+    }
+
     override fun onCleared() {
         super.onCleared()
         mediaPlayer?.release()
+        mediaPlayer = null
     }
 }

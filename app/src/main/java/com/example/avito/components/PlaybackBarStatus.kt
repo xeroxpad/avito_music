@@ -1,6 +1,7 @@
 package com.example.avito.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,13 +62,14 @@ fun PlaybackBarStatus(
             .padding(horizontal = 20.dp)
             .clip(shape = RoundedCornerShape(10.dp))
             .background(Color.Gray.copy(2f))
-            .clickable { navController.navigate("${Graph.DetailsTracks.route}/${track.id}")},
+            .clickable { navController.navigate("${Graph.DetailsTracks.route}/${track.id}") },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
-                .size(44.dp)
+                .padding(5.dp)
                 .clip(shape = RoundedCornerShape(10.dp))
+                .border(width = 1.dp, color = Color.Unspecified, shape = RoundedCornerShape(10.dp))
                 .background(Color.Gray.copy(0.2f))
                 .weight(0.2f),
             contentAlignment = Alignment.Center,
@@ -77,10 +79,10 @@ fun PlaybackBarStatus(
                 contentDescription = null,
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(14.dp))
-                    .padding(5.dp)
+                    .padding(horizontal = 5.dp)
                     .fillMaxSize(),
-                placeholder = painterResource(id = R.drawable.ic_track_default),
-                error = painterResource(id = R.drawable.ic_track_default),
+                placeholder = painterResource(id = R.drawable.ic_music_audio_party),
+                error = painterResource(id = R.drawable.ic_music_audio_party),
                 contentScale = ContentScale.FillBounds,
             )
         }
@@ -110,7 +112,7 @@ fun PlaybackBarStatus(
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.25f)
         ) {
             Box(
                 modifier = Modifier
@@ -136,7 +138,6 @@ fun PlaybackBarStatus(
                     modifier = Modifier.size(20.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(2.dp))
             IconButton(
                 onClick = {
                     if (isShuffle) {

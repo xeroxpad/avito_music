@@ -1,9 +1,11 @@
 package com.example.avito.screens
 
 import android.Manifest
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -52,6 +54,7 @@ import com.example.avito.viewmodel.DownloadedTracksViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DownloadedTracksScreen(
     modifier: Modifier = Modifier,
@@ -171,9 +174,12 @@ fun DownloadedTracksScreen(
                                 if (playerViewModel.currentTrackIndex.value != trackIndex) {
                                     playerViewModel.playTrack(context, trackIndex)
                                 }
-                                if (isPlaying) {
-                                    playerViewModel.pauseTrack()
-                                } else {
+//                                if (isPlaying) {
+//                                    playerViewModel.pauseTrack()
+//                                } else {
+//                                    playerViewModel.resumeTrack()
+//                                }
+                                else if (!isPlaying) {
                                     playerViewModel.resumeTrack()
                                 }
                             }
