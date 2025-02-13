@@ -6,7 +6,7 @@ import android.media.MediaPlayer
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.avito.entity.TrackCard
+import com.example.avito.data.model.TrackCard
 import com.example.avito.service.MusicPlayerService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -174,11 +174,6 @@ fun DownloadedTracksScreen(
                                 if (playerViewModel.currentTrackIndex.value != trackIndex) {
                                     playerViewModel.playTrack(context, trackIndex)
                                 }
-//                                if (isPlaying) {
-//                                    playerViewModel.pauseTrack()
-//                                } else {
-//                                    playerViewModel.resumeTrack()
-//                                }
                                 else if (!isPlaying) {
                                     playerViewModel.resumeTrack()
                                 }

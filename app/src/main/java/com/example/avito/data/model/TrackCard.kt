@@ -1,4 +1,4 @@
-package com.example.avito.entity
+package com.example.avito.data.model
 
 import android.net.Uri
 
@@ -9,5 +9,6 @@ data class TrackCard(
     val artistTrack: String = "Unknown",
     val durationTrack: String = "",
     val path: String = "",
-    val uri: Uri,
+    val previewUrl: String = "",
+    val uri: Uri = Uri.EMPTY
 )

@@ -1,15 +1,11 @@
 package com.example.avito.viewmodel
 
 import android.app.Application
-import android.content.Context
-import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.avito.entity.TrackCard
+import com.example.avito.data.model.TrackCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

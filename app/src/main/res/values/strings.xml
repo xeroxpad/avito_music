@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Avito Music</string>
     <string name="tracks_from_devices">Треки с устройства</string>
+    <string name="avizeer">AviZeer</string>
     <string name="empty_list">Список пуст ;(</string>
+
 </resources>

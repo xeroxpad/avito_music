@@ -26,10 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.avito.R
-import com.example.avito.entity.TrackCard
+import com.example.avito.data.model.TrackCard
 
 @Composable
 fun CardTrack(
