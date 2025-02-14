@@ -1,5 +1,7 @@
 package com.example.avito.start
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +24,7 @@ import com.example.avito.navigation.NavHostItem
 import com.example.avito.player.PlayerViewModel
 import com.example.avito.viewmodel.DownloadedTracksViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StartScreen(
     navController: NavHostController,
@@ -35,7 +38,6 @@ fun StartScreen(
     bottomBarIsShow.value = when (baseRoute) {
         Graph.DetailsTracks.route,
         -> false
-
         else -> true
     }
     Scaffold(bottomBar = {

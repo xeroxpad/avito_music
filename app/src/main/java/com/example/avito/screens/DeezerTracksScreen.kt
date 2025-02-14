@@ -51,15 +51,11 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 @Composable
 fun DeezerTracksScreen(
     modifier: Modifier = Modifier,
-//    deezerTracksViewModel: DeezerTracksViewModel,
+    deezerTracksViewModel: DeezerTracksViewModel,
     playerViewModel: PlayerViewModel,
     navController: NavController,
     innerPadding: PaddingValues,
 ) {
-    val repository = remember { DeezerRepository() }
-    val deezerTracksViewModel: DeezerTracksViewModel = viewModel(
-        factory = DeezerTracksViewModelFactory(repository)
-    )
     val isRefreshing by deezerTracksViewModel.isRefreshing.collectAsStateWithLifecycle()
     val isEmptyList by deezerTracksViewModel.isEmptyList.collectAsStateWithLifecycle()
     val tracks by deezerTracksViewModel.track.collectAsStateWithLifecycle()
@@ -107,7 +103,7 @@ fun DeezerTracksScreen(
                 }
             } else {
                 Text(
-                    text = stringResource(id = R.string.avizeer),
+                    text = stringResource(id = R.string.my_wave),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(vertical = 5.dp)
@@ -131,7 +127,7 @@ fun DeezerTracksScreen(
         }
         SwipeRefresh(
             state = SwipeRefreshState(isRefreshing),
-            onRefresh = { deezerTracksViewModel.fetchTracks("inna") }
+            onRefresh = { deezerTracksViewModel.fetchTracks(null) }
         ) {
             if (isEmptyList || listToShow.isEmpty()) {
                 Column(
@@ -156,20 +152,6 @@ fun DeezerTracksScreen(
                             detectTapGestures(onTap = { focusManager.clearFocus() })
                         }
                 ) {
-//                    items(listToShow) { track ->
-//                        CardTrack(
-//                            trackCard = track,
-//                            onClick = {
-//                                val trackIndex = tracks.indexOf(track)
-//                                if (playerViewModel.currentTrackIndex.value != trackIndex) {
-//                                    playerViewModel.playTrack(context, trackIndex)
-//                                }
-//                                else if (!isPlaying) {
-//                                    playerViewModel.resumeTrack()
-//                                }
-//                            }
-//                        )
-//                    }
                     items(listToShow) { track ->
                         CardTrack(
                             trackCard = track,

@@ -1,11 +1,8 @@
 package com.example.avito.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.avito.api.RetrofitClient
 import com.example.avito.data.model.TrackCard
-import com.example.avito.mapper.toTrackCard
 import com.example.avito.repository.DeezerRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,28 +19,16 @@ class DeezerTracksViewModel(private val repository: DeezerRepository) : ViewMode
     val isEmptyList: StateFlow<Boolean> = _isEmptyList
 
     init {
-        fetchTracks("")
+        fetchTracks(null)
     }
 
-    fun fetchTracks(query: String) {
-//        viewModelScope.launch {
-//            try {
-//                val response = RetrofitClient.api.searchTracks(query)
-//                _track.value = response.tracks.map { it.toTrackCard() }
-//            } catch (e: Exception) {
-//                Log.e("DeezerViewModel", "Ошибка загрузки: ${e.message}")
-//            }
-//        }
-
-
+    fun fetchTracks(query: String?) {
         viewModelScope.launch {
-            viewModelScope.launch {
-                _isRefreshing.value = true
-                val tracks = repository.getTracks(query)
-                _track.value = tracks
-                _isEmptyList.value = tracks.isEmpty()
-                _isRefreshing.value = false
-            }
+            _isRefreshing.value = true
+            val tracks = repository.getTracks(query ?: "")
+            _track.value = tracks
+            _isEmptyList.value = tracks.isEmpty()
+            _isRefreshing.value = false
         }
     }
 }

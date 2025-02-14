@@ -3,10 +3,13 @@ package com.example.avito.player
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
+import android.net.Uri
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.avito.data.model.TrackCard
+import com.example.avito.repository.DeezerRepository
 import com.example.avito.service.MusicPlayerService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -14,7 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
     private var mediaPlayer: MediaPlayer? = null
 
     private val _isPlaying = MutableStateFlow(false)
@@ -29,7 +32,10 @@ class PlayerViewModel : ViewModel() {
     private val _currentTrackIndex = MutableStateFlow(0)
     val currentTrackIndex: StateFlow<Int> get() = _currentTrackIndex
 
-    private var trackList: List<TrackCard> = emptyList()
+//    var trackList: List<TrackCard> = emptyList()
+
+    private val _trackList = MutableStateFlow<List<TrackCard>>(emptyList())
+    val trackList: StateFlow<List<TrackCard>> get() = _trackList
 
     private val _isRepeat = MutableStateFlow(false)
     val isRepeat: StateFlow<Boolean> get() = _isRepeat
@@ -40,41 +46,91 @@ class PlayerViewModel : ViewModel() {
     private var progressJob: Job? = null
 
     fun setTrackList(tracks: List<TrackCard>) {
-        trackList = tracks
+        _trackList.value = tracks
     }
 
     fun playTrack(context: Context, trackIndex: Int) {
-        if (trackIndex < 0 || trackIndex >= trackList.size) return
+//        if (trackIndex < 0 || trackIndex >= trackList.size) return
+        if (trackIndex < 0 || trackIndex >= _trackList.value.size) return
 
         _currentTrackIndex.value = trackIndex
-        val trackUri = trackList[trackIndex].uri
+//        val trackUri = trackList[trackIndex].uri
+        val trackUri = _trackList.value[trackIndex]
 
-        mediaPlayer?.release()
-        mediaPlayer = MediaPlayer().apply {
-            setDataSource(context, trackUri)
-            prepare()
-            start()
 
-            _duration.value = duration
-        }
+//        if (trackUri == null) {
+//            Log.e("PlayerViewModel", "Ошибка: track.uri == null")
+//            return
+//        }
 
-        _isPlaying.value = true
-        startProgressUpdater()
-        startMusicService(context)
+        viewModelScope.launch {
+//            val previewUrl = repository.getTrackById(trackUri.id)
+//            if (previewUrl.isNullOrEmpty()) {
+//                Log.e("PlayerViewModel", "Ошибка: previewUrl == null")
+//                return@launch
+//            }
+//
+//            try {
+//                mediaPlayer?.release()
+//                mediaPlayer = MediaPlayer().apply {
+////                setDataSource(context, trackUri)
+//                    setDataSource(previewUrl)
+//                    prepare()
+//                    start()
+//
+//                    _duration.value = duration
+//                }
+//
+//                _isPlaying.value = true
+//                startProgressUpdater()
+//                startMusicService(context)
+//
+//                mediaPlayer?.setOnCompletionListener {
+//                    when {
+//                        _isRepeat.value -> playTrack(context, _currentTrackIndex.value)
+//                        _isShuffle.value -> playRandomTrack(context)
+//                        else -> playNextTrack(context)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                Log.e("PlayerViewModel", "Ошибка воспроизведения: ${e.message}")
+//            }
+//        }
 
-        mediaPlayer?.setOnCompletionListener {
-            when {
-                _isRepeat.value -> {
-                    playTrack(context, _currentTrackIndex.value)
+            try {
+                mediaPlayer?.release()
+                mediaPlayer = MediaPlayer()
+
+                if (trackUri.uri.query!!.isNotEmpty()) {
+                    mediaPlayer?.setDataSource(context, Uri.parse(trackUri.uri.toString()))
+                } else {
+                    val previewUrl = repository.getTrackById(trackUri.id)
+                    if (previewUrl.isNullOrEmpty()) {
+                        Log.e("PlayerViewModel", "Ошибка: previewUrl == null")
+                        return@launch
+                    }
+                    mediaPlayer?.setDataSource(previewUrl)
                 }
 
-                _isShuffle.value -> {
-                    playRandomTrack(context)
+                mediaPlayer?.apply {
+                    prepare()
+                    start()
+                    _duration.value = duration
                 }
 
-                else -> {
-                    playNextTrack(context)
+                _isPlaying.value = true
+                startProgressUpdater()
+                startMusicService(context)
+
+                mediaPlayer?.setOnCompletionListener {
+                    when {
+                        _isRepeat.value -> playTrack(context, _currentTrackIndex.value)
+                        _isShuffle.value -> playRandomTrack(context)
+                        else -> playNextTrack(context)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("PlayerViewModel", "Ошибка воспроизведения: ${e.message}")
             }
         }
     }
@@ -112,7 +168,7 @@ class PlayerViewModel : ViewModel() {
 
     fun playNextTrack(context: Context) {
         val nextIndex = _currentTrackIndex.value + 1
-        if (nextIndex < trackList.size) {
+        if (nextIndex < _trackList.value.size) {
             playTrack(context, nextIndex)
         }
     }
@@ -125,8 +181,8 @@ class PlayerViewModel : ViewModel() {
     }
 
     fun playRandomTrack(context: Context) {
-        if (trackList.isNotEmpty()) {
-            val randomIndex = (trackList.indices).random()
+        if (_trackList.value.isNotEmpty()) {
+            val randomIndex = (_trackList.value.indices).random()
             playTrack(context, randomIndex)
         }
     }
@@ -147,9 +203,9 @@ class PlayerViewModel : ViewModel() {
 
     fun searchTracks(query: String): List<TrackCard> {
         return if (query.isBlank()) {
-            trackList
+            _trackList.value
         } else {
-            trackList.filter {
+            _trackList.value.filter {
                 it.titleTrack.contains(
                     query,
                     ignoreCase = true

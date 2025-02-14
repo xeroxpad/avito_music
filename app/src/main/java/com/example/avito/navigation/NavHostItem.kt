@@ -18,6 +18,7 @@ import com.example.avito.screens.DetailsTrackScreen
 import com.example.avito.screens.DownloadedTracksScreen
 import com.example.avito.viewmodel.DeezerTracksViewModel
 import com.example.avito.viewmodel.DownloadedTracksViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -26,9 +27,9 @@ fun NavHostItem(
     navController: NavHostController,
     innerPadding: PaddingValues,
 ) {
-    val downloadedTracksViewModel: DownloadedTracksViewModel = viewModel()
-    val playerViewModel: PlayerViewModel = viewModel()
-    val deezerTracksViewModel: DeezerTracksViewModel = viewModel()
+    val downloadedTracksViewModel: DownloadedTracksViewModel = koinViewModel()
+    val playerViewModel: PlayerViewModel = koinViewModel()
+    val deezerTracksViewModel: DeezerTracksViewModel = koinViewModel()
     Box(modifier = modifier) {
         NavHost(
             navController = navController,
@@ -38,7 +39,7 @@ fun NavHostItem(
                 DeezerTracksScreen(
                     navController = navController,
                     innerPadding = innerPadding,
-//                    deezerTracksViewModel = deezerTracksViewModel,
+                    deezerTracksViewModel = deezerTracksViewModel,
                     playerViewModel = playerViewModel
                 )
             }
@@ -48,7 +49,6 @@ fun NavHostItem(
                     playerViewModel = playerViewModel,
                     downloadedTracksViewModel = downloadedTracksViewModel,
                     innerPadding = innerPadding,
-
                     )
             }
             composable("${Graph.DetailsTracks.route}/{trackId}") { backStackEntry ->
@@ -57,7 +57,8 @@ fun NavHostItem(
                     navController.popBackStack()
                     return@composable
                 }
-                val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
+//                val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
+                val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
                 val track = tracks.find { it.id == trackId }
                 track?.let {
                     DetailsTrackScreen(

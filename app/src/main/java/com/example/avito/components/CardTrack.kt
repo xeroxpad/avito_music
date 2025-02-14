@@ -39,7 +39,7 @@ fun CardTrack(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(54.dp)
             .clip(shape = RoundedCornerShape(14.dp))
             .clickable { onClick() }
     ) {
@@ -50,8 +50,8 @@ fun CardTrack(
         ) {
             Box(
                 modifier = Modifier
-                    .size(52.dp)
                     .clip(shape = RoundedCornerShape(14.dp))
+                    .size(48.dp)
                     .background(Color.Gray.copy(0.2f))
                     .weight(0.2f),
                 contentAlignment = Alignment.Center,
@@ -60,19 +60,19 @@ fun CardTrack(
                     model = trackCard.coverTrack,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(48.dp)
                         .clip(shape = RoundedCornerShape(14.dp))
-                        .padding(3.dp),
+                        .fillMaxSize()
+                        .padding(1.dp),
                     placeholder = painterResource(id = R.drawable.ic_track_default),
                     error = painterResource(id = R.drawable.ic_track_default),
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Crop,
                 )
             }
             Spacer(modifier = Modifier.width(10.dp))
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(0.8f)
+                    .weight(0.9f)
             ) {
                 Column {
                     Text(

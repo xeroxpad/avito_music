@@ -64,6 +64,7 @@ fun DetailsTrackScreen(
     val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
     val progress = if (duration > 0) currentPosition.toFloat() / duration else 0f
     LaunchedEffect(tracks) {
+//        playerViewModel.trackList = tracks
         playerViewModel.setTrackList(tracks)
     }
 

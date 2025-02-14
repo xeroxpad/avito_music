@@ -20,7 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,12 +50,21 @@ fun PlaybackBarStatus(
     downloadedTracksViewModel: DownloadedTracksViewModel,
     navController: NavController,
 ) {
-    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
+//    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
+//    val tracks by remember { mutableStateOf(playerViewModel.trackList.value) }
+    val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
     val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
     val currentTrackIndex by playerViewModel.currentTrackIndex.collectAsStateWithLifecycle()
-    val track = tracks.getOrNull(currentTrackIndex) ?: return
+    if (tracks.isEmpty() || currentTrackIndex !in tracks.indices) return
+//    val track = tracks.getOrNull(currentTrackIndex) ?: return
+    val track = tracks[currentTrackIndex]
     val context = LocalContext.current
     val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
+
+//    LaunchedEffect(tracks) {
+//        playerViewModel.setTrackList(tracks)
+//    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -119,10 +131,19 @@ fun PlaybackBarStatus(
                     .clip(CircleShape)
                     .background(Color.Black)
                     .clickable {
+//                        if (isPlaying) {
+//                            playerViewModel.pauseTrack()
+//                        } else {
+//                            playerViewModel.resumeTrack()
+//                        }
                         if (isPlaying) {
                             playerViewModel.pauseTrack()
                         } else {
-                            playerViewModel.resumeTrack()
+                            if (currentTrackIndex in tracks.indices) {
+                                playerViewModel.playTrack(context, currentTrackIndex)
+                            } else {
+                                playerViewModel.playTrack(context, 0)
+                            }
                         }
                     },
                 contentAlignment = Alignment.Center

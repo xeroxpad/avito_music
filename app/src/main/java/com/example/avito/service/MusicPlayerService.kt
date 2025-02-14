@@ -29,10 +29,10 @@ class MusicPlayerService : Service() {
     private lateinit var playerViewModel: PlayerViewModel
     private val CHANNEL_ID = "MusicServiceChannel"
     private val NOTIFICATION_ID = 1
-    private val ACTION_PLAY = "com.example.avito.service.ACTION_PLAY"
-    private val ACTION_PAUSE = "com.example.avito.service.ACTION_PAUSE"
-    private val ACTION_NEXT = "com.example.avito.service.ACTION_NEXT"
-    private val ACTION_PREV = "com.example.avito.service.ACTION_PREVIOUS"
+    private val ACTION_PLAY = "ACTION_PLAY"
+    private val ACTION_PAUSE = "ACTION_PAUSE"
+    private val ACTION_NEXT = "ACTION_NEXT"
+    private val ACTION_PREV = "ACTION_PREVIOUS"
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         @SuppressLint("ForegroundServiceType")
