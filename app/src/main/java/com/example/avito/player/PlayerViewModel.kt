@@ -32,7 +32,8 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
     private val _currentTrackIndex = MutableStateFlow(0)
     val currentTrackIndex: StateFlow<Int> get() = _currentTrackIndex
 
-//    var trackList: List<TrackCard> = emptyList()
+    private val _currentTrackId = MutableStateFlow<String?>(null)
+    val currentTrackId: StateFlow<String?> = _currentTrackId
 
     private val _trackList = MutableStateFlow<List<TrackCard>>(emptyList())
     val trackList: StateFlow<List<TrackCard>> get() = _trackList
@@ -49,70 +50,21 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
         _trackList.value = tracks
     }
 
-    fun playTrack(context: Context, trackIndex: Int) {
-//        if (trackIndex < 0 || trackIndex >= trackList.size) return
+    fun playTrack(context: Context, trackIndex: Int,) {
         if (trackIndex < 0 || trackIndex >= _trackList.value.size) return
-
         _currentTrackIndex.value = trackIndex
-//        val trackUri = trackList[trackIndex].uri
-        val trackUri = _trackList.value[trackIndex]
-
-
-//        if (trackUri == null) {
-//            Log.e("PlayerViewModel", "Ошибка: track.uri == null")
-//            return
-//        }
+        val track = _trackList.value[trackIndex]
 
         viewModelScope.launch {
-//            val previewUrl = repository.getTrackById(trackUri.id)
-//            if (previewUrl.isNullOrEmpty()) {
-//                Log.e("PlayerViewModel", "Ошибка: previewUrl == null")
-//                return@launch
-//            }
-//
-//            try {
-//                mediaPlayer?.release()
-//                mediaPlayer = MediaPlayer().apply {
-////                setDataSource(context, trackUri)
-//                    setDataSource(previewUrl)
-//                    prepare()
-//                    start()
-//
-//                    _duration.value = duration
-//                }
-//
-//                _isPlaying.value = true
-//                startProgressUpdater()
-//                startMusicService(context)
-//
-//                mediaPlayer?.setOnCompletionListener {
-//                    when {
-//                        _isRepeat.value -> playTrack(context, _currentTrackIndex.value)
-//                        _isShuffle.value -> playRandomTrack(context)
-//                        else -> playNextTrack(context)
-//                    }
-//                }
-//            } catch (e: Exception) {
-//                Log.e("PlayerViewModel", "Ошибка воспроизведения: ${e.message}")
-//            }
-//        }
-
             try {
                 mediaPlayer?.release()
-                mediaPlayer = MediaPlayer()
-
-                if (trackUri.uri.query!!.isNotEmpty()) {
-                    mediaPlayer?.setDataSource(context, Uri.parse(trackUri.uri.toString()))
-                } else {
-                    val previewUrl = repository.getTrackById(trackUri.id)
-                    if (previewUrl.isNullOrEmpty()) {
-                        Log.e("PlayerViewModel", "Ошибка: previewUrl == null")
-                        return@launch
+                mediaPlayer = MediaPlayer().apply {
+                    if (track.isLocal) {
+                        setDataSource(context, track.uri!!)
+                    } else {
+                        val previewUrl = repository.getTrackById(track.id)
+                        setDataSource(previewUrl)
                     }
-                    mediaPlayer?.setDataSource(previewUrl)
-                }
-
-                mediaPlayer?.apply {
                     prepare()
                     start()
                     _duration.value = duration
@@ -129,6 +81,7 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
                         else -> playNextTrack(context)
                     }
                 }
+
             } catch (e: Exception) {
                 Log.e("PlayerViewModel", "Ошибка воспроизведения: ${e.message}")
             }
@@ -139,7 +92,20 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
         progressJob?.cancel()
         progressJob = viewModelScope.launch {
             while (_isPlaying.value) {
-                _currentPosition.value = mediaPlayer?.currentPosition ?: 0
+                val player = mediaPlayer
+                if (player == null) {
+                    Log.e("PlayerViewModel", "MediaPlayer стал null, останавливаю обновление прогресса")
+                    _isPlaying.value = false
+                    break
+                }
+                try {
+                    _currentPosition.value = player.currentPosition
+                } catch (e: IllegalStateException) {
+                    Log.e("PlayerViewModel", "Ошибка в startProgressUpdater: ${e.message}")
+                    _isPlaying.value = false
+                    break
+                }
+
                 delay(500)
             }
         }
@@ -167,9 +133,23 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
     }
 
     fun playNextTrack(context: Context) {
-        val nextIndex = _currentTrackIndex.value + 1
-        if (nextIndex < _trackList.value.size) {
-            playTrack(context, nextIndex)
+//        val nextIndex = _currentTrackIndex.value + 1
+//        if (nextIndex < _trackList.value.size) {
+//            playTrack(context, nextIndex)
+//        }
+        viewModelScope.launch {
+            if (_trackList.value.isEmpty()) {
+                Log.e("PlayerViewModel", "Список треков пуст, невозможно переключить на следующий")
+                return@launch
+            }
+
+            val nextIndex = _currentTrackIndex.value + 1
+            if (nextIndex < _trackList.value.size) {
+                Log.d("PlayerViewModel", "Переключаем трек: $nextIndex из ${_trackList.value.size}")
+                playTrack(context, nextIndex)
+            } else {
+                Log.e("PlayerViewModel", "Достигнут конец списка, трек не найден")
+            }
         }
     }
 

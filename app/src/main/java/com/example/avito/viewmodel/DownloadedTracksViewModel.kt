@@ -66,13 +66,13 @@ class DownloadedTracksViewModel(application: Application) : AndroidViewModel(app
                             coverTrack = "",
                             titleTrack = title,
                             artistTrack = artist,
-                            uri = url
+                            uri = url,
+                            isLocal = true,
                         )
                     )
                 }
             }
         }
-
         return trackList
     }
 }

@@ -44,7 +44,6 @@ import com.example.avito.components.SearchField
 import com.example.avito.player.PlayerViewModel
 import com.example.avito.repository.DeezerRepository
 import com.example.avito.viewmodel.DeezerTracksViewModel
-import com.example.avito.viewmodel.DeezerTracksViewModelFactory
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 

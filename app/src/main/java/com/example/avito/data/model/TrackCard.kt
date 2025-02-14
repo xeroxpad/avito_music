@@ -10,5 +10,6 @@ data class TrackCard(
     val durationTrack: String = "",
     val path: String = "",
     val previewUrl: String = "",
-    val uri: Uri = Uri.EMPTY
+    val uri: Uri? = null,
+    val isLocal: Boolean = false
 )

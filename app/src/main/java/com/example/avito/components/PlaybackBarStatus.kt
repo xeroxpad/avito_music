@@ -50,20 +50,13 @@ fun PlaybackBarStatus(
     downloadedTracksViewModel: DownloadedTracksViewModel,
     navController: NavController,
 ) {
-//    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
-//    val tracks by remember { mutableStateOf(playerViewModel.trackList.value) }
     val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
     val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
     val currentTrackIndex by playerViewModel.currentTrackIndex.collectAsStateWithLifecycle()
     if (tracks.isEmpty() || currentTrackIndex !in tracks.indices) return
-//    val track = tracks.getOrNull(currentTrackIndex) ?: return
     val track = tracks[currentTrackIndex]
     val context = LocalContext.current
     val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
-
-//    LaunchedEffect(tracks) {
-//        playerViewModel.setTrackList(tracks)
-//    }
 
     Row(
         modifier = modifier
@@ -131,11 +124,6 @@ fun PlaybackBarStatus(
                     .clip(CircleShape)
                     .background(Color.Black)
                     .clickable {
-//                        if (isPlaying) {
-//                            playerViewModel.pauseTrack()
-//                        } else {
-//                            playerViewModel.resumeTrack()
-//                        }
                         if (isPlaying) {
                             playerViewModel.pauseTrack()
                         } else {

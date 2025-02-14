@@ -6,17 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.avito.player.PlayerViewModel
-import com.example.avito.repository.DeezerRepository
 import com.example.avito.start.StartScreen
 import com.example.avito.ui.theme.AvitoTheme
-import com.example.avito.viewmodel.DeezerTracksViewModel
-import com.example.avito.viewmodel.DeezerTracksViewModelFactory
 import com.example.avito.viewmodel.DownloadedTracksViewModel
-import com.example.avito.viewmodel.PlayerViewModelFactory
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
