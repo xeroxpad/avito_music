@@ -155,9 +155,14 @@ fun DeezerTracksScreen(
                         CardTrack(
                             trackCard = track,
                             onClick = {
-                                val trackIndex = tracks.indexOf(track)
-                                if (playerViewModel.currentTrackIndex.value != trackIndex) {
-                                    playerViewModel.playTrack(context, trackIndex)
+//                                val trackIndex = tracks.indexOf(track)
+//                                if (playerViewModel.currentTrackIndex.value != trackIndex) {
+//                                    playerViewModel.playTrack(context, trackIndex)
+//                                } else if (!isPlaying) {
+//                                    playerViewModel.resumeTrack()
+//                                }
+                                if (playerViewModel.currentTrackId.value != track.id) {
+                                    playerViewModel.playTrack(context, track.id)
                                 } else if (!isPlaying) {
                                     playerViewModel.resumeTrack()
                                 }

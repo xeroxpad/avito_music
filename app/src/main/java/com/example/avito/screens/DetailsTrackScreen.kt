@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,10 +54,11 @@ fun DetailsTrackScreen(
     playerViewModel: PlayerViewModel,
     innerPadding: PaddingValues,
 ) {
-    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
-    val currentTrackIndex by playerViewModel.currentTrackIndex.collectAsStateWithLifecycle()
+//    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
+    val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
+    val currentTrackId by playerViewModel.currentTrackId.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val track = tracks.getOrNull(currentTrackIndex)
+    val track = remember(currentTrackId, tracks) { tracks.find { it.id == currentTrackId } }
     val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
     val currentPosition by playerViewModel.currentPosition.collectAsStateWithLifecycle()
     val duration by playerViewModel.duration.collectAsStateWithLifecycle()
@@ -175,7 +177,7 @@ fun DetailsTrackScreen(
             ) {
                 IconButton(
                     onClick = { playerViewModel.playBackTrack(context) },
-                    enabled = currentTrackIndex > 0
+                    enabled = tracks.isNotEmpty()
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_player_back),
@@ -213,7 +215,7 @@ fun DetailsTrackScreen(
                             playerViewModel.playNextTrack(context)
                         }
                     },
-                    enabled = if (isShuffle) true else currentTrackIndex < tracks.size - 1
+                    enabled = tracks.isNotEmpty()
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_player_next),

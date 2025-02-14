@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import com.example.avito.api.RetrofitClient
 import com.example.avito.data.api.DeezerApi
+import com.example.avito.data.model.Track
 import com.example.avito.data.model.TrackCard
 
 class DeezerRepository(private val api: DeezerApi) {
@@ -31,12 +32,21 @@ class DeezerRepository(private val api: DeezerApi) {
         }
     }
 
-    suspend fun getTrackById(trackId: Long): String? {
+//    suspend fun getTrackById(trackId: Long): String? {
+//        return try {
+//            val response = api.getTrack(trackId)
+//            response.preview
+//        } catch (e: Exception) {
+//            Log.e("DeezerRepository", "Ошибка получения трека: ${e.message}")
+//            null
+//        }
+//    }
+
+    suspend fun getTrackById(trackId: Long): Track? {
         return try {
-            val response = api.getTrack(trackId)
-            response.preview
+            RetrofitClient.api.getTrack(trackId)
         } catch (e: Exception) {
-            Log.e("DeezerRepository", "Ошибка получения трека: ${e.message}")
+            Log.e("DeezerRepository", "Ошибка загрузки трека: ${e.message}")
             null
         }
     }

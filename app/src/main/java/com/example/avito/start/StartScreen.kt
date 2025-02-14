@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,26 +26,34 @@ import com.example.avito.navigation.Graph
 import com.example.avito.navigation.NavHostItem
 import com.example.avito.player.PlayerViewModel
 import com.example.avito.viewmodel.DownloadedTracksViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StartScreen(
     navController: NavHostController,
-    playerViewModel: PlayerViewModel,
+    playerViewModel: PlayerViewModel = koinViewModel(),
     downloadedTracksViewModel: DownloadedTracksViewModel,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val baseRoute = currentRoute?.substringBefore("/") ?: ""
-    val bottomBarIsShow = rememberSaveable { (mutableStateOf(true)) }
-    bottomBarIsShow.value = when (baseRoute) {
-        Graph.DetailsTracks.route,
-        -> false
-        else -> true
+//    val bottomBarIsVisible = remember(navBackStackEntry) {
+//        when {
+//            currentRoute?.startsWith(Graph.DetailsTracks.route) == true -> false
+//            else -> true
+//        }
+    val bottomBarIsVisible = remember { mutableStateOf(true) }
+
+    LaunchedEffect(navBackStackEntry) {
+        bottomBarIsVisible.value = when {
+            currentRoute?.startsWith(Graph.DetailsTracks.route) == true -> false
+            else -> true
+        }
     }
+
     Scaffold(bottomBar = {
         when {
-            bottomBarIsShow.value -> {
+            bottomBarIsVisible.value -> {
                 Column {
                     PlaybackBarStatus(
                         modifier = Modifier
