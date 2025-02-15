@@ -61,8 +61,7 @@ fun CardTrack(
                     contentDescription = null,
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(14.dp))
-                        .fillMaxSize()
-                        .padding(1.dp),
+                        .fillMaxSize(),
                     placeholder = painterResource(id = R.drawable.ic_track_default),
                     error = painterResource(id = R.drawable.ic_track_default),
                     contentScale = ContentScale.Crop,

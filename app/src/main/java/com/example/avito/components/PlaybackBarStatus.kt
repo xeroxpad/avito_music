@@ -52,19 +52,11 @@ fun PlaybackBarStatus(
 ) {
     val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
     val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
-//    val currentTrackIndex by playerViewModel.currentTrackIndex.collectAsStateWithLifecycle()
-//    if (tracks.isEmpty() || currentTrackIndex !in tracks.indices) return
-//    val track = tracks[currentTrackIndex]
-
     val currentTrackId by playerViewModel.currentTrackId.collectAsStateWithLifecycle()
-
-//    val track = tracks.find { it.id == currentTrackId } ?: return
     val track = remember(currentTrackId, tracks) {
         tracks.find { it.id == currentTrackId }
     }
     if (track == null) return
-
-
     val context = LocalContext.current
     val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
 
@@ -82,7 +74,7 @@ fun PlaybackBarStatus(
         Box(
             modifier = Modifier
                 .padding(5.dp)
-                .clip(shape = RoundedCornerShape(10.dp))
+                .clip(shape = RoundedCornerShape(8.dp))
                 .border(width = 1.dp, color = Color.Unspecified, shape = RoundedCornerShape(10.dp))
                 .background(Color.Gray.copy(0.2f))
                 .weight(0.2f),
@@ -92,12 +84,10 @@ fun PlaybackBarStatus(
                 model = track.coverTrack,
                 contentDescription = null,
                 modifier = Modifier
-                    .clip(shape = RoundedCornerShape(14.dp))
-                    .padding(horizontal = 5.dp)
                     .fillMaxSize(),
                 placeholder = painterResource(id = R.drawable.ic_music_audio_party),
                 error = painterResource(id = R.drawable.ic_music_audio_party),
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Crop,
             )
         }
         Spacer(modifier = Modifier.width(3.dp))
@@ -135,15 +125,6 @@ fun PlaybackBarStatus(
                     .clip(CircleShape)
                     .background(Color.Black)
                     .clickable {
-//                        if (isPlaying) {
-//                            playerViewModel.pauseTrack()
-//                        } else {
-//                            if (currentTrackIndex in tracks.indices) {
-//                                playerViewModel.playTrack(context, currentTrackIndex)
-//                            } else {
-//                                playerViewModel.playTrack(context, 0)
-//                            }
-//                        }
                         if (isPlaying) playerViewModel.pauseTrack()
                         else playerViewModel.playTrack(context, track.id)
                     },
@@ -160,15 +141,9 @@ fun PlaybackBarStatus(
             }
             IconButton(
                 onClick = {
-//                    if (isShuffle) {
-//                        playerViewModel.playRandomTrack(context)
-//                    } else {
-//                        playerViewModel.playNextTrack(context)
-//                    }
                     if (isShuffle) playerViewModel.playRandomTrack(context)
                     else playerViewModel.playNextTrack(context)
                 },
-//                enabled = if (isShuffle) true else currentTrackIndex < tracks.size - 1,
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_player_next),

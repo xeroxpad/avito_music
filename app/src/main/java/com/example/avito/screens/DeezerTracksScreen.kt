@@ -1,5 +1,6 @@
 package com.example.avito.screens
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -96,8 +97,8 @@ fun DeezerTracksScreen(
                         onBack = {
                             isSearchVisible = false
                             searchQuery = ""
+                            deezerTracksViewModel.fetchTracks(null)
                         }
-
                     )
                 }
             } else {

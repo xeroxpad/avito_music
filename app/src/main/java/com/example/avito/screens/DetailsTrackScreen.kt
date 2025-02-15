@@ -118,8 +118,8 @@ fun DetailsTrackScreen(
                 contentDescription = null,
                 placeholder = painterResource(id = R.drawable.ic_track_default),
                 error = painterResource(id = R.drawable.ic_track_default),
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.padding(5.dp)
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
         }
         Column(

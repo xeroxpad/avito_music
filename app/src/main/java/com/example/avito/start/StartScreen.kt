@@ -2,7 +2,9 @@ package com.example.avito.start
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -15,7 +17,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -32,16 +36,11 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun StartScreen(
     navController: NavHostController,
-    playerViewModel: PlayerViewModel = koinViewModel(),
+    playerViewModel: PlayerViewModel,
     downloadedTracksViewModel: DownloadedTracksViewModel,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-//    val bottomBarIsVisible = remember(navBackStackEntry) {
-//        when {
-//            currentRoute?.startsWith(Graph.DetailsTracks.route) == true -> false
-//            else -> true
-//        }
     val bottomBarIsVisible = remember { mutableStateOf(true) }
 
     LaunchedEffect(navBackStackEntry) {
