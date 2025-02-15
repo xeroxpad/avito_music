@@ -32,16 +32,6 @@ class DeezerRepository(private val api: DeezerApi) {
         }
     }
 
-//    suspend fun getTrackById(trackId: Long): String? {
-//        return try {
-//            val response = api.getTrack(trackId)
-//            response.preview
-//        } catch (e: Exception) {
-//            Log.e("DeezerRepository", "Ошибка получения трека: ${e.message}")
-//            null
-//        }
-//    }
-
     suspend fun getTrackById(trackId: Long): Track? {
         return try {
             RetrofitClient.api.getTrack(trackId)

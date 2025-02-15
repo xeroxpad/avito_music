@@ -21,9 +21,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             AvitoTheme {
                 val navController = rememberNavController()
-                val downloadedTracksViewModel: DownloadedTracksViewModel = koinViewModel()
                 val playerViewModel: PlayerViewModel = koinViewModel()
-                StartScreen(navController = navController, playerViewModel = playerViewModel, downloadedTracksViewModel = downloadedTracksViewModel,)
+                StartScreen(navController = navController, playerViewModel = playerViewModel)
             }
         }
     }

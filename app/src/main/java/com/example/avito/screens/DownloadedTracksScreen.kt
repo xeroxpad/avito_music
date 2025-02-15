@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,12 +18,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +45,6 @@ import androidx.navigation.NavController
 import com.example.avito.R
 import com.example.avito.components.CardTrack
 import com.example.avito.components.SearchField
-import com.example.avito.navigation.Graph
 import com.example.avito.player.PlayerViewModel
 import com.example.avito.viewmodel.DownloadedTracksViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -60,7 +56,6 @@ fun DownloadedTracksScreen(
     modifier: Modifier = Modifier,
     downloadedTracksViewModel: DownloadedTracksViewModel,
     playerViewModel: PlayerViewModel,
-    navController: NavController,
     innerPadding: PaddingValues
 ) {
     val isRefreshing by downloadedTracksViewModel.isRefreshing.collectAsStateWithLifecycle()
@@ -170,13 +165,6 @@ fun DownloadedTracksScreen(
                         CardTrack(
                             trackCard = track,
                             onClick = {
-//                                val trackIndex = tracks.indexOf(track)
-//                                if (playerViewModel.currentTrackIndex.value != trackIndex) {
-//                                    playerViewModel.playTrack(context, trackIndex)
-//                                }
-//                                else if (!isPlaying) {
-//                                    playerViewModel.resumeTrack()
-//                                }
                                 if (playerViewModel.currentTrackId.value != track.id) {
                                     playerViewModel.playTrack(context, track.id)
                                 } else if (!isPlaying) {

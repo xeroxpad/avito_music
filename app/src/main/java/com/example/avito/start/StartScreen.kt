@@ -37,7 +37,6 @@ import org.koin.androidx.compose.koinViewModel
 fun StartScreen(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
-    downloadedTracksViewModel: DownloadedTracksViewModel,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -59,7 +58,6 @@ fun StartScreen(
                             .fillMaxWidth()
                             .padding(top = 5.dp),
                         playerViewModel = playerViewModel,
-                        downloadedTracksViewModel = downloadedTracksViewModel,
                         navController = navController,
                     )
                     BottomNavigationBar(

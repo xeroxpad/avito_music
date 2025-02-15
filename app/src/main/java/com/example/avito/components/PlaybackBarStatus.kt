@@ -16,8 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,109 +51,108 @@ import com.example.avito.viewmodel.DownloadedTracksViewModel
 fun PlaybackBarStatus(
     modifier: Modifier = Modifier,
     playerViewModel: PlayerViewModel,
-    downloadedTracksViewModel: DownloadedTracksViewModel,
     navController: NavController,
 ) {
-    val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
-    val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
+    val currentTrack by playerViewModel.currentTrack.collectAsStateWithLifecycle()
     val currentTrackId by playerViewModel.currentTrackId.collectAsStateWithLifecycle()
-    val track = remember(currentTrackId, tracks) {
+    val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
+    val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
+    val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
+    val track = remember(currentTrackId, currentTrackId) {
         tracks.find { it.id == currentTrackId }
     }
     if (track == null) return
     val context = LocalContext.current
-    val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
-
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .padding(horizontal = 20.dp)
-            .clip(shape = RoundedCornerShape(10.dp))
-            .background(Color.Gray.copy(2f))
-            .clickable { navController.navigate("${Graph.DetailsTracks.route}/${track.id}") },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(5.dp)
-                .clip(shape = RoundedCornerShape(8.dp))
-                .border(width = 1.dp, color = Color.Unspecified, shape = RoundedCornerShape(10.dp))
-                .background(Color.Gray.copy(0.2f))
-                .weight(0.2f),
-            contentAlignment = Alignment.Center,
+    if (currentTrack != null) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(horizontal = 20.dp)
+                .clip(shape = RoundedCornerShape(10.dp))
+                .clickable {
+                    navController.navigate("${Graph.DetailsTracks.route}/${track.id}")
+                }
+                .background(Color.Gray.copy(2f))
         ) {
-            AsyncImage(
-                model = track.coverTrack,
-                contentDescription = null,
+            Row(
                 modifier = Modifier
-                    .fillMaxSize(),
-                placeholder = painterResource(id = R.drawable.ic_music_audio_party),
-                error = painterResource(id = R.drawable.ic_music_audio_party),
-                contentScale = ContentScale.Crop,
-            )
-        }
-        Spacer(modifier = Modifier.width(3.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.5f)
-        ) {
-            Column {
-                Text(
-                    text = track.titleTrack,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = track.artistTrack,
-                    fontWeight = FontWeight.Light,
-                    maxLines = 1,
-                    fontSize = 14.sp,
-                    lineHeight = 8.sp,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(0.25f)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 3.dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black)
-                    .clickable {
-                        if (isPlaying) playerViewModel.pauseTrack()
-                        else playerViewModel.playTrack(context, track.id)
-                    },
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    painter = painterResource(
-                        id = if (isPlaying) R.drawable.ic_player_pause else R.drawable.ic_player_play
-                    ),
-                    contentDescription = if (isPlaying) "Pause" else "Play",
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            IconButton(
-                onClick = {
-                    if (isShuffle) playerViewModel.playRandomTrack(context)
-                    else playerViewModel.playNextTrack(context)
-                },
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_player_next),
-                    contentDescription = "Next",
-                    modifier = Modifier.size(20.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .border(
+                            width = 1.dp,
+                            color = Color.Unspecified,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .background(Color.Gray.copy(0.2f))
+                        .weight(0.2f),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    AsyncImage(
+                        model = currentTrack!!.coverTrack,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        placeholder = painterResource(id = R.drawable.ic_music_audio_party),
+                        error = painterResource(id = R.drawable.ic_music_audio_party),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+                Spacer(modifier = Modifier.width(5.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = currentTrack!!.titleTrack,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = currentTrack!!.artistTrack,
+                        maxLines = 1,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 14.sp,
+                        lineHeight = 8.sp,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Row {
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 3.dp)
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black)
+                            .clickable {
+                                playerViewModel.togglePlayPause()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (isPlaying) R.drawable.ic_player_pause else R.drawable.ic_player_play
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    IconButton(onClick = {
+                        if (isShuffle) playerViewModel.playRandomTrack(context)
+                        else playerViewModel.playNextTrack(context)
+                    }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_player_next),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
         }
     }

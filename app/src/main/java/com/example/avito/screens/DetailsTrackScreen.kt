@@ -43,18 +43,15 @@ import coil.compose.AsyncImage
 import com.example.avito.R
 import com.example.avito.data.model.TrackCard
 import com.example.avito.player.PlayerViewModel
-import com.example.avito.viewmodel.DownloadedTracksViewModel
 
 @Composable
 fun DetailsTrackScreen(
     modifier: Modifier = Modifier,
     trackCard: TrackCard,
     navController: NavController,
-    downloadedTracksViewModel: DownloadedTracksViewModel,
     playerViewModel: PlayerViewModel,
     innerPadding: PaddingValues,
 ) {
-//    val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
     val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
     val currentTrackId by playerViewModel.currentTrackId.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -66,7 +63,6 @@ fun DetailsTrackScreen(
     val isShuffle by playerViewModel.isShuffle.collectAsStateWithLifecycle()
     val progress = if (duration > 0) currentPosition.toFloat() / duration else 0f
     LaunchedEffect(tracks) {
-//        playerViewModel.trackList = tracks
         playerViewModel.setTrackList(tracks)
     }
 

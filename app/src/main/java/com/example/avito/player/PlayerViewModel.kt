@@ -15,7 +15,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
@@ -34,13 +33,12 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
     val track: StateFlow<Track?> get() = _track
 
     private val _currentTrackIndex = MutableStateFlow(0)
-    val currentTrackIndex: StateFlow<Int> get() = _currentTrackIndex
 
     private val _currentTrackId = MutableStateFlow<Long?>(null)
     val currentTrackId: StateFlow<Long?> get() = _currentTrackId
 
-    private val _isPlaybackBarVisible = MutableStateFlow(true)
-    val isPlaybackBarVisible: StateFlow<Boolean> = _isPlaybackBarVisible.asStateFlow()
+    private val _currentTrack = MutableStateFlow<TrackCard?>(null)
+    val currentTrack: StateFlow<TrackCard?> = _currentTrack
 
     private val _trackList = MutableStateFlow<List<TrackCard>>(emptyList())
     val trackList: StateFlow<List<TrackCard>> get() = _trackList
@@ -67,6 +65,7 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
 
     fun playTrack(context: Context, trackId: Long) {
         val track = _trackList.value.find { it.id == trackId } ?: return
+        _currentTrack.value = track
 
         viewModelScope.launch {
             try {
@@ -84,10 +83,6 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
                 }
 
                 _isPlaying.value = true
-
-                _isPlaybackBarVisible.value = true
-
-//                _currentTrackId.value = track.id
                 _currentTrackId.value = trackId
                 _currentTrackIndex.value = _trackList.value.indexOf(track)
                 startProgressUpdater()
@@ -113,18 +108,15 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
             while (_isPlaying.value) {
                 val player = mediaPlayer
                 if (player == null) {
-                    Log.e("PlayerViewModel", "MediaPlayer стал null, останавливаю обновление прогресса")
                     _isPlaying.value = false
                     break
                 }
                 try {
                     _currentPosition.value = player.currentPosition
                 } catch (e: IllegalStateException) {
-                    Log.e("PlayerViewModel", "Ошибка в startProgressUpdater: ${e.message}")
                     _isPlaying.value = false
                     break
                 }
-
                 delay(500)
             }
         }
@@ -161,7 +153,8 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
 
     fun playNextTrack(context: Context) {
         viewModelScope.launch {
-            val currentTrack = _trackList.value.find { it.id == _currentTrackId.value } ?: return@launch
+            val currentTrack =
+                _trackList.value.find { it.id == _currentTrackId.value } ?: return@launch
             val currentIndex = _trackList.value.indexOf(currentTrack)
             val nextTrack = _trackList.value.getOrNull(currentIndex + 1)
             nextTrack?.let { playTrack(context, it.id) }
@@ -170,7 +163,8 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
 
     fun playBackTrack(context: Context) {
         viewModelScope.launch {
-            val currentTrack = _trackList.value.find { it.id == _currentTrackId.value } ?: return@launch
+            val currentTrack =
+                _trackList.value.find { it.id == _currentTrackId.value } ?: return@launch
             val currentIndex = _trackList.value.indexOf(currentTrack)
             val prevTrack = _trackList.value.getOrNull(currentIndex - 1)
             prevTrack?.let { playTrack(context, it.id) }
@@ -206,12 +200,6 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
                     ignoreCase = true
                 ) || it.artistTrack.contains(query, ignoreCase = true)
             }
-        }
-    }
-
-    fun loadTrack(trackId: Long) {
-        viewModelScope.launch {
-            _track.value = repository.getTrackById(trackId)
         }
     }
 

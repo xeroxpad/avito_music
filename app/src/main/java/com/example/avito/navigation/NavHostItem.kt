@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,7 +36,6 @@ fun NavHostItem(
         ) {
             composable(Graph.TracksFromDeezer.route) {
                 DeezerTracksScreen(
-                    navController = navController,
                     innerPadding = innerPadding,
                     deezerTracksViewModel = deezerTracksViewModel,
                     playerViewModel = playerViewModel
@@ -45,7 +43,6 @@ fun NavHostItem(
             }
             composable(Graph.DownloadedTracks.route) {
                 DownloadedTracksScreen(
-                    navController = navController,
                     playerViewModel = playerViewModel,
                     downloadedTracksViewModel = downloadedTracksViewModel,
                     innerPadding = innerPadding,
@@ -57,7 +54,6 @@ fun NavHostItem(
                     navController.popBackStack()
                     return@composable
                 }
-//                val tracks by downloadedTracksViewModel.track.collectAsStateWithLifecycle()
                 val tracks by playerViewModel.trackList.collectAsStateWithLifecycle()
                 val track = tracks.find { it.id == trackId }
                 track?.let {
@@ -65,7 +61,6 @@ fun NavHostItem(
                         trackCard = it,
                         navController = navController,
                         playerViewModel = playerViewModel,
-                        downloadedTracksViewModel = downloadedTracksViewModel,
                         innerPadding = innerPadding
                     )
                 }
