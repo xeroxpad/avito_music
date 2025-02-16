@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+
+// Основная ViewModel для управления аудиоплеером
 class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
     private var mediaPlayer: MediaPlayer? = null
 
@@ -59,10 +61,12 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
         instance = this
     }
 
+    // Обновление списка треков для плеера
     fun setTrackList(tracks: List<TrackCard>) {
         _trackList.value = tracks
     }
 
+    // Основной метод воспроизведения трека
     fun playTrack(context: Context, trackId: Long) {
         val track = _trackList.value.find { it.id == trackId } ?: return
         _currentTrack.value = track
@@ -102,6 +106,7 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
         }
     }
 
+    // Запуск обновления прогресса воспроизведения
     private fun startProgressUpdater() {
         progressJob?.cancel()
         progressJob = viewModelScope.launch {
@@ -203,6 +208,7 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
         }
     }
 
+    // Запуск фонового сервиса
     fun startMusicService(context: Context, trackId: Long) {
         val intent = Intent(context, MusicPlayerService::class.java).apply {
             action = "START_SERVICE"
@@ -211,6 +217,7 @@ class PlayerViewModel(private val repository: DeezerRepository) : ViewModel() {
         ContextCompat.startForegroundService(context, intent)
     }
 
+    // Очистка ресурсов
     override fun onCleared() {
         super.onCleared()
         mediaPlayer?.release()

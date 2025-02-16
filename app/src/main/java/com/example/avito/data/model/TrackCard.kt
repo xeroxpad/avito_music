@@ -2,6 +2,7 @@ package com.example.avito.data.model
 
 import android.net.Uri
 
+// Модель данных для отображения трека в списке
 data class TrackCard(
     val id: Long = 0,
     val coverTrack: String = "",

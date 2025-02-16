@@ -10,35 +10,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.runtime.getValue
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media.AudioManagerCompat.requestAudioFocus
 import com.example.avito.MainActivity
 import com.example.avito.R
-import com.example.avito.data.model.Track
-import com.example.avito.data.model.TrackCard
 import com.example.avito.player.PlayerViewModel
-import com.example.avito.viewmodel.DownloadedTracksViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import java.net.URL
 
 
 class MusicPlayerService : Service(), KoinComponent {
@@ -48,8 +27,14 @@ class MusicPlayerService : Service(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
+
+    //    Инициализация менеджера уведомлений
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+    //    Создание канала уведомлений
         createNotificationChannel()
+
+    //    Регистрация BroadcastReceiver для обработки кнопок управления воспроизведением
         registerMediaReceiver()
     }
 
@@ -59,6 +44,7 @@ class MusicPlayerService : Service(), KoinComponent {
                 val trackId = intent.getLongExtra("trackId", -1)
                 updateNotification(trackId)
             }
+
             "PLAY_PAUSE" -> handlePlayPause()
             "NEXT" -> handleNext()
             "PREV" -> handlePrevious()
@@ -67,20 +53,24 @@ class MusicPlayerService : Service(), KoinComponent {
         return START_STICKY
     }
 
+    //    Переключает состояние воспроизведения и обновляет уведомление.
     private fun handlePlayPause() {
         PlayerViewModel.instance?.togglePlayPause()
         isPlaying = !isPlaying
         updateNotification(PlayerViewModel.instance?.currentTrackId?.value ?: -1)
     }
 
+    //    Воспроизводит следующий трек.
     private fun handleNext() {
         PlayerViewModel.instance?.playNextTrack(applicationContext)
     }
 
+    //    Воспроизводит предыдущий трек.
     private fun handlePrevious() {
         PlayerViewModel.instance?.playBackTrack(applicationContext)
     }
 
+    //    Создание канала уведомлений для управления воспроизведением.
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -94,12 +84,15 @@ class MusicPlayerService : Service(), KoinComponent {
         }
     }
 
+
+    //    Создает уведомление с кнопками управления музыкой.
     private fun buildNotification(trackId: Long): Notification {
         val track = PlayerViewModel.instance?.trackList?.value?.find { it.id == trackId }
 
         val playPauseIcon = if (isPlaying)
             android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
 
+    //    PendingIntent для открытия главного экрана приложения
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
@@ -107,6 +100,7 @@ class MusicPlayerService : Service(), KoinComponent {
             PendingIntent.FLAG_IMMUTABLE
         )
 
+    //    Интенты для кнопок управления воспроизведением
         val playPauseIntent = Intent(this, MusicPlayerService::class.java)
             .setAction("PLAY_PAUSE")
         val nextIntent = Intent(this, MusicPlayerService::class.java)
@@ -164,12 +158,14 @@ class MusicPlayerService : Service(), KoinComponent {
             .build()
     }
 
+    //    Обновление уведомления с актуальной информацией о треке.
     @SuppressLint("ForegroundServiceType")
     private fun updateNotification(trackId: Long) {
         val notification = buildNotification(trackId)
         startForeground(NOTIFICATION_ID, notification)
     }
 
+    //    Регистрация BroadcastReceiver для обработки медиакнопок.
     private fun registerMediaReceiver() {
         mediaReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -188,6 +184,7 @@ class MusicPlayerService : Service(), KoinComponent {
         registerReceiver(mediaReceiver, filter)
     }
 
+    //    Очищение ресурсов при уничтожении сервиса.
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(mediaReceiver)

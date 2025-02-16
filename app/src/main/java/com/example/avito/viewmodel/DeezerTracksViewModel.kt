@@ -22,6 +22,10 @@ class DeezerTracksViewModel(private val repository: DeezerRepository) : ViewMode
         fetchTracks(null)
     }
 
+    /**
+     * Загрузка треков по переданному запросу.
+     * Если query == null, загружаются треки по умолчанию.
+     **/
     fun fetchTracks(query: String?) {
         viewModelScope.launch {
             _isRefreshing.value = true

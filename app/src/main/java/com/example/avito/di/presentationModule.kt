@@ -7,6 +7,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
+// Модуль для ViewModel
 val presentationModule =
     module {
         viewModel { DeezerTracksViewModel(get()) }

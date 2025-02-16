@@ -5,7 +5,7 @@ import com.example.avito.data.model.Track
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-
+// Интерфейс для запросов к API Deezer
 interface DeezerApi {
     @GET("search")
     suspend fun searchTracks(
