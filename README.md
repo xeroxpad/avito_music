@@ -1,3 +1,5 @@
+Видеозапись о работе приложения - https://drive.google.com/file/d/1OXwp9W2RuEq4BmfHmt4yTeH-gbv8_sks/view?usp=drive_link
+
 # 🎵 Музыкальное приложение на Kotlin (Jetpack Compose + Deezer API)
 Приложение для поиска и воспроизведения треков с Deezer API, написанное на Kotlin с использованием
 Jetpack Compose.
